@@ -8,8 +8,8 @@ const reasons = [
     desc: (
       <>
         Dipercaya banyak customer dengan kurma Sukkari{" "}
-        <span className="font-bold text-[#15723D]">Nuran, Alqassim,</span> dan{" "}
-        <span className="font-bold text-[#15723D]">Golden Valley</span>
+        <span className="font-bold text-[#9A4234]">Nuran, Aldayfe,</span> dan{" "}
+        <span className="font-bold text-[#9A4234]">Golden Valley</span>
       </>
     ),
   },
@@ -20,7 +20,7 @@ const reasons = [
     desc: (
       <>
         Setiap langkah kami pastikan berkualitas, setiap kendala kami selesaikan{" "}
-        <span className="font-bold text-[#15723D]">bersama</span>
+        <span className="font-bold text-[#9A4234]">bersama</span>
       </>
     ),
   },
@@ -30,7 +30,7 @@ const reasons = [
     title: "Respon Cepat",
     desc: (
       <>
-        Dalam <span className="font-bold text-[#15723D]">sehari</span>, pesanan
+        Dalam <span className="font-bold text-[#9A4234]">sehari</span>, pesanan
         diproses cepat dan segera dikirim
       </>
     ),
@@ -183,7 +183,7 @@ const ReasonSection = () => {
             {reasons.map((item) => (
               <div
                 key={item.id}
-                className="w-full md:min-w-full lg:min-w-0 md:snap-center bg-white rounded-br-[3rem] overflow-hidden shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 duration-300 flex flex-col min-h-[542px]"
+                className="w-full md:min-w-full lg:min-w-0 md:snap-center bg-[#FFF6F2] rounded-br-[3rem] overflow-hidden shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 duration-300 flex flex-col min-h-[542px]"
               >
                 <div className="h-[300px] overflow-hidden">
                   <img
@@ -193,10 +193,10 @@ const ReasonSection = () => {
                   />
                 </div>
                 <div className="p-8 flex-1 flex flex-col items-center text-center">
-                  <h3 className="text-2xl font-bold text-[#15723D] mb-4">
+                  <h3 className="text-2xl font-bold text-[#9A4234] mb-4">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 text-base leading-relaxed">
+                  <p className="text-[#9A4234] text-base leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -517,6 +517,7 @@ const App = () => {
         </div>
       </section>
       {/* Contact Section */}
+      {/* Contact Section */}
       <section
         id="contact"
         className="min-h-screen bg-[#E8E8E8] py-16 md:py-24 flex items-center scroll-mt-12 md:scroll-mt-12"
@@ -566,12 +567,14 @@ const App = () => {
                 ></textarea>
 
                 {/* Submit Button */}
-                <button
-                  type="submit"
-                  className="bg-white text-[#15723D] px-10 py-3 rounded-xl font-semibold hover:bg-gray-50 transition transform hover:scale-105 shadow-md text-sm"
-                >
-                  Kirim
-                </button>
+                <div className="flex justify-center md:justify-start">
+                  <button
+                    type="submit"
+                    className="bg-white text-[#15723D] px-10 py-3 rounded-xl font-semibold hover:bg-gray-50 transition transform hover:scale-105 shadow-md text-sm"
+                  >
+                    Kirim
+                  </button>
+                </div>
               </form>
             </div>
 
