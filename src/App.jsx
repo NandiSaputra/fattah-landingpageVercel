@@ -865,19 +865,23 @@ const App = () => {
       {/* Footer */}
       <footer className="bg-[#15723D] text-white py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-16 lg:gap-32">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 lg:grid-cols-4 lg:gap-16">
             {/* Company Info - paling bawah di mobile & tablet, tetap center */}
             <div
-              className="order-last md:col-span-1 text-center md:flex md:flex-col md:items-center lg:order-first lg:col-span-1 lg:text-left lg:block"
+              className="order-last md:order-last md:col-span-3 text-center md:flex md:flex-col md:items-center lg:order-first lg:col-span-1 lg:flex lg:flex-col lg:items-center lg:justify-center"
               data-aos="fade-up"
             >
-              <a href="#home" onClick={handleLogoClick}>
+              <a
+                href="#home"
+                onClick={handleLogoClick}
+                className="flex flex-col items-center"
+              >
                 <img
                   src="/images/logo.png"
                   alt="Fattah Logo"
-                  className="h-16 w-auto object-contain mb-4 brightness-0 invert mx-auto lg:mx-0"
+                  className="h-16 w-auto object-contain mb-4 brightness-0 invert"
                 />
-                <p className="text-white/80 text-xl leading-relaxed">
+                <p className="text-white/80 text-xl leading-relaxed whitespace-nowrap">
                   PT. Pattah Niaga Mandiri
                 </p>
               </a>
@@ -885,7 +889,7 @@ const App = () => {
 
             {/* Quick Links */}
             <div
-              className="order-1 lg:order-none text-left lg:text-left lg:pl-8"
+              className="order-1 lg:order-none text-left md:flex md:flex-col md:items-center lg:block lg:items-start"
               data-aos="fade-up"
             >
               <h3 className="font-bold text-xl mb-4">Perusahaan</h3>
@@ -926,7 +930,7 @@ const App = () => {
             </div>
 
             <div
-              className="order-2 lg:order-none text-left lg:text-left lg:pl-8"
+              className="order-2 lg:order-none text-left md:flex md:flex-col md:items-center lg:block lg:items-start lg:pl-8"
               data-aos="fade-up"
             >
               <h3 className="font-bold text-xl mb-4">Media Sosial</h3>
@@ -952,7 +956,7 @@ const App = () => {
 
             {/* Contact Info */}
             <div
-              className="order-3 lg:order-none text-left lg:text-left lg:pl-8"
+              className="order-3 lg:order-none text-left md:flex md:flex-col md:items-center lg:block lg:items-start lg:pl-8"
               data-aos="fade-up"
             >
               <h3 className="font-bold text-xl mb-4">Contact</h3>
