@@ -542,7 +542,7 @@ const App = () => {
 
             {/* Button - Diperkecil untuk desktop */}
             <a
-              href="https://wa.me/088805599004"
+              href="https://wa.me/6288805599004"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#226A38] hover:bg-[#1B552E] text-white px-8 md:px-14 py-2 md:py-4 rounded-md font-semibold text-lg md:text-3xl lg:text-lg xl:text-xl transition transform hover:scale-105 shadow-lg mb-10 md:mb-8 inline-block"
