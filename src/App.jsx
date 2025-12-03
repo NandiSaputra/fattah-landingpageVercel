@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import emailjs from "@emailjs/browser";
 
 const reasons = [
   {
@@ -112,13 +115,16 @@ const ReasonSection = () => {
       id="why-us"
       className="py-16 md:py-24 bg-[#15723D] transition-all duration-500 scroll-mt-12 md:scroll-mt-16 min-h-screen flex flex-col justify-center"
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
+      <div
+        className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16"
+        data-aos="fade-up"
+      >
         {/* Section Title */}
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             Alasan Memilih Kami?
           </h2>
-          <p className="text-white/90 text-lg md:text-xl mb-8">
+          <p className="text-white/90 text-xl md:text-3xl mb-8">
             Pelanggan adalah prioritas kami
           </p>
 
@@ -192,11 +198,11 @@ const ReasonSection = () => {
                     className="w-full h-full object-cover hover:scale-110 transition duration-500"
                   />
                 </div>
-                <div className="p-8 flex-1 flex flex-col items-center text-center">
-                  <h3 className="text-2xl font-bold text-[#9A4234] mb-4">
+                <div className="py-8 px-6 flex-1 flex flex-col items-center text-center">
+                  <h3 className="text-[35px] font-bold text-[#9A4234] mb-4">
                     {item.title}
                   </h3>
-                  <p className="text-[#9A4234] text-base leading-relaxed">
+                  <p className="text-[#9A4234] text-2xl leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -212,13 +218,25 @@ const ReasonSection = () => {
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [formStatus, setFormStatus] = useState(null); // null | 'submitting' | 'success' | 'error'
 
+  // Scroll listener for navbar background
   React.useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Initialize AOS for scroll animations
+  React.useEffect(() => {
+    AOS.init({
+      once: false,
+      mirror: true, // Allow animation to trigger when scrolling back up
+      duration: 1000,
+    });
+    AOS.refresh();
   }, []);
 
   const handleLogoClick = (e) => {
@@ -234,11 +252,149 @@ const App = () => {
     }
   };
 
+  const handleNavClick = (e, id) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Check rate limit (2 submissions per 24 hours)
+    const submissionHistory = JSON.parse(
+      localStorage.getItem("submissionHistory") || "[]"
+    );
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    // Filter submissions from the last 24 hours
+    const recentSubmissions = submissionHistory.filter(
+      (timestamp) => now - timestamp < twentyFourHours
+    );
+
+    if (recentSubmissions.length >= 2) {
+      setFormStatus("rate-limited");
+      e.target.reset();
+      setTimeout(() => setFormStatus(null), 5000);
+      return;
+    }
+
+    setFormStatus("submitting");
+
+    // Get credentials from environment variables
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    try {
+      // Send form directly using emailjs.sendForm
+      // This automatically collects all input values from the form reference
+      const result = await emailjs.sendForm(
+        serviceId,
+        templateId,
+        e.target,
+        publicKey
+      );
+
+      if (result.text === "OK") {
+        setFormStatus("success");
+
+        // Update submission history
+        const updatedHistory = [...recentSubmissions, now];
+        localStorage.setItem(
+          "submissionHistory",
+          JSON.stringify(updatedHistory)
+        );
+
+        e.target.reset();
+        setTimeout(() => setFormStatus(null), 5000); // Hide after 5 seconds
+      } else {
+        setFormStatus("error");
+        console.error("EmailJS Error:", result.text);
+      }
+    } catch (error) {
+      setFormStatus("error");
+      console.error("EmailJS Error:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen">
+      {/* Notification Toast */}
+      {formStatus === "success" && (
+        <div className="fixed top-24 right-6 z-[10000] bg-green-500 text-white px-6 py-4 rounded-lg shadow-xl flex items-center gap-3 animate-fade-in-down">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <div>
+            <h4 className="font-bold">Berhasil!</h4>
+            <p className="text-sm">Pesan anda telah terkirim.</p>
+          </div>
+        </div>
+      )}
+
+      {formStatus === "error" && (
+        <div className="fixed top-24 right-6 z-[10000] bg-red-500 text-white px-6 py-4 rounded-lg shadow-xl flex items-center gap-3 animate-fade-in-down">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          <div>
+            <h4 className="font-bold">Gagal!</h4>
+            <p className="text-sm">Terjadi kesalahan, silakan coba lagi.</p>
+          </div>
+        </div>
+      )}
+
+      {formStatus === "rate-limited" && (
+        <div className="fixed top-24 right-6 z-[10000] bg-yellow-500 text-white px-6 py-4 rounded-lg shadow-xl flex items-center gap-3 animate-fade-in-down">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div>
+            <h4 className="font-bold">Mohon Maaf</h4>
+            <p className="text-sm">
+              Anda sudah mengirim pesan hari ini. Silakan coba lagi besok.
+            </p>
+          </div>
+        </div>
+      )}
       {/* Navbar - Transparan di atas, Putih saat di-scroll */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 ${
           isScrolled ? "bg-white shadow-md py-0" : "bg-transparent py-2"
         }`}
       >
@@ -261,18 +417,21 @@ const App = () => {
             <nav className="hidden lg:flex gap-8 items-center">
               <a
                 href="#why-us"
+                onClick={(e) => handleNavClick(e, "why-us")}
                 className="text-[#15723D] hover:text-green-400 transition text-xl xl:text-2xl font-medium"
               >
                 Kenapa Kami
               </a>
               <a
                 href="#brands"
+                onClick={(e) => handleNavClick(e, "brands")}
                 className="text-[#15723D] hover:text-green-400 transition text-xl xl:text-2xl font-medium"
               >
                 Brands Tersedia
               </a>
               <a
                 href="#quality"
+                onClick={(e) => handleNavClick(e, "quality")}
                 className="text-[#15723D] hover:text-green-400 transition text-xl xl:text-2xl font-medium"
               >
                 Kualitas Storage
@@ -320,21 +479,21 @@ const App = () => {
               <a
                 href="#why-us"
                 className="block text-[#15723D] hover:text-green-400 py-3 md:py-4 font-medium text-xl md:text-2xl"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, "why-us")}
               >
                 Kenapa Kami
               </a>
               <a
                 href="#brands"
                 className="block text-[#15723D] hover:text-green-400 py-3 md:py-4 font-medium text-xl md:text-2xl"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, "brands")}
               >
                 Brands Tersedia
               </a>
               <a
                 href="#quality"
                 className="block text-[#15723D] hover:text-green-400 py-3 md:py-4 font-medium text-xl md:text-2xl"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, "quality")}
               >
                 Kualitas Storage
               </a>
@@ -362,10 +521,13 @@ const App = () => {
         />
 
         {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-white/30"></div>
+        <div className="absolute inset-0"></div>
 
         {/* Content - Dinaikkan posisinya untuk mobile dan tablet dengan margin tambahan di tablet */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-8 flex items-center justify-center h-full">
+        <div
+          className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-8 flex items-center justify-center h-full"
+          data-aos="fade-up"
+        >
           <div className="text-center max-w-2xl md:max-w-3xl lg:max-w-3xl -mt-8 md:-mt-10 lg:mt-0">
             {/* Tagline - Diperkecil untuk desktop */}
             <p className="text-lg md:text-3xl lg:text-lg xl:text-xl font-medium text-[#226A38] mb-4 md:mb-6">
@@ -379,9 +541,14 @@ const App = () => {
             </h1>
 
             {/* Button - Diperkecil untuk desktop */}
-            <button className="bg-[#226A38] hover:bg-[#1B552E] text-white px-8 md:px-14 py-2 md:py-4 rounded-md font-semibold text-lg md:text-3xl lg:text-lg xl:text-xl transition transform hover:scale-105 shadow-lg mb-10 md:mb-8 inline-block">
+            <a
+              href="https://wa.me/6281993520678"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#226A38] hover:bg-[#1B552E] text-white px-8 md:px-14 py-2 md:py-4 rounded-md font-semibold text-lg md:text-3xl lg:text-lg xl:text-xl transition transform hover:scale-105 shadow-lg mb-10 md:mb-8 inline-block"
+            >
               WA kami
-            </button>
+            </a>
 
             {/* Promo Text - Diperkecil untuk desktop */}
             <p className="text-base md:text-2xl lg:text-base xl:text-lg text-[#226A38] font-medium">
@@ -400,42 +567,45 @@ const App = () => {
         id="brands"
         className="min-h-screen flex flex-col justify-center py-16 md:py-24 bg-[url('/images/bg.jpg')] bg-cover bg-center bg-no-repeat scroll-mt-12 md:scroll-mt-16"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
+        <div
+          className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16"
+          data-aos="fade-up"
+        >
           {/* Section Title */}
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#226A38] mb-3">
               Brands Tersedia
             </h2>
-            <p className="text-base sm:text-lg text-[#226A38]/80">
+            <p className="text-base sm:text-3xl text-[#226A38]/80">
               Brands terbaik untuk bisnis anda
             </p>
           </div>
 
           {/* Brands Grid - 1 gambar full width di atas, 2 gambar di bawah */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 lg:gap-6 min-h-[600px] lg:min-h-[700px]">
             {/* Gambar pertama full width */}
-            <div className="w-full">
+            <div className="w-full h-[350px] lg:h-[450px] overflow-hidden ">
               <img
                 src="/images/product1.png"
                 alt="ALDAYFE Brand"
-                className="w-full h-auto object-cover rounded-lg"
+                className="w-full h-full object-cover hover:scale-110 transition duration-500"
               />
             </div>
 
             {/* Grid untuk 2 gambar di bawah - sebelah kiri lebih kecil */}
-            <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-1">
+            <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-5">
+              <div className="lg:col-span-1 h-[300px] lg:h-[350px] overflow-hidden  bg-white">
                 <img
                   src="/images/product2.png"
                   alt="Golden Valley Brand"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover hover:scale-110 transition duration-500"
                 />
               </div>
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-2 h-[300px] lg:h-[350px] overflow-hidden  bg-white">
                 <img
-                  src="/images/product3.png"
+                  src="/images/product3.jpg"
                   alt="Nuran Brand"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover hover:scale-110 transition duration-500"
                 />
               </div>
             </div>
@@ -448,7 +618,10 @@ const App = () => {
         id="quality"
         className="min-h-screen flex flex-col justify-center py-16 md:py-24 bg-[url('/images/bg.jpg')] bg-cover bg-center bg-no-repeat scroll-mt-12 md:scroll-mt-16"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
+        <div
+          className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16"
+          data-aos="fade-up"
+        >
           {/* Mobile/Tablet Title (Visible < lg) */}
           <h2 className="lg:hidden text-2xl sm:text-3xl md:text-4xl font-bold text-[#15723D] mb-6 text-center">
             Kualitas Storage
@@ -496,7 +669,10 @@ const App = () => {
         id="importir"
         className="min-h-screen bg-[url('/images/import.png')] bg-cover bg-center bg-no-repeat py-16 md:py-24 flex items-center"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 w-full">
+        <div
+          className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 w-full"
+          data-aos="fade-up"
+        >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Side - Title */}
             <div className="text-white text-center lg:text-left">
@@ -522,32 +698,44 @@ const App = () => {
         id="contact"
         className="min-h-screen bg-[#E8E8E8] py-16 md:py-24 flex items-center scroll-mt-12 md:scroll-mt-12"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 w-full">
+        <div
+          className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 w-full"
+          data-aos="fade-up"
+        >
           {/* Section Title */}
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#15723D] mb-3">
               Kontak Kami
             </h2>
-            <p className="text-base md:text-lg text-[#15723D]/70">
+            <p className="text-xl md:text-3xl text-[#15723D]/70">
               Siap menjadi mitra bisnis anda
             </p>
           </div>
 
           {/* Contact Content - Overlapping Layout */}
-          <div className="relative max-w-7xl mx-auto">
+          <div className="relative max-w-5xl mx-auto">
             {/* Form Section - Left Side (Behind) */}
             <div className="relative z-10 bg-[#15723D] p-6 md:p-8 lg:p-12 rounded-lg shadow-xl lg:w-[92%]">
-              <form className="space-y-4 lg:pr-[20%]">
+              <form onSubmit={handleSubmit} className="space-y-4 lg:pr-[20%]">
+                {/* EmailJS Form */}
+
                 {/* Name and Phone */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     type="text"
+                    name="nama"
                     placeholder="Nama"
+                    required
                     className="w-full px-4 py-3 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
                   />
                   <input
                     type="tel"
+                    name="telepon"
                     placeholder="Nomor Telepon"
+                    required
+                    onInput={(e) =>
+                      (e.target.value = e.target.value.replace(/[^0-9]/g, ""))
+                    }
                     className="w-full px-4 py-3 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
                   />
                 </div>
@@ -555,14 +743,18 @@ const App = () => {
                 {/* Store Name */}
                 <input
                   type="text"
+                  name="nama_toko"
                   placeholder="Nama Toko"
+                  required
                   className="w-full px-4 py-3 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
                 />
 
                 {/* Store Location */}
                 <textarea
+                  name="lokasi_toko"
                   placeholder="Lokasi Toko"
                   rows="6"
+                  required
                   className="w-full px-4 py-3 rounded-xl bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 resize-none text-sm"
                 ></textarea>
 
@@ -570,16 +762,17 @@ const App = () => {
                 <div className="flex justify-center md:justify-start">
                   <button
                     type="submit"
-                    className="bg-white text-[#15723D] px-10 py-3 rounded-xl font-semibold hover:bg-gray-50 transition transform hover:scale-105 shadow-md text-sm"
+                    disabled={formStatus === "submitting"}
+                    className="bg-white text-[#15723D] px-10 py-3 rounded-xl font-semibold hover:bg-gray-50 transition transform hover:scale-105 shadow-md text-sm disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    Kirim
+                    {formStatus === "submitting" ? "Mengirim..." : "Kirim"}
                   </button>
                 </div>
               </form>
             </div>
 
             {/* Info Section - Right Side (On Top) */}
-            <div className="relative lg:absolute lg:right-0 lg:top-[3%] lg:w-[27%] z-10 bg-[#0B4523] border-white border-1  p-8 md:p-10 rounded-lg  shadow-2xl text-white mt-8 lg:mt-0">
+            <div className="relative lg:absolute lg:right-[-3%] lg:top-[6%] lg:w-[30%] z-10 bg-[#15723D] border-white border-1  p-8 md:p-10 rounded-lg  shadow-2xl text-white mt-8 lg:mt-0">
               <h3 className="text-sm md:text-xl lg:text-base font-semibold mb-8 leading-relaxed">
                 Have questions? Our team is ready to help you
               </h3>
@@ -587,20 +780,16 @@ const App = () => {
               <div className="flex flex-col space-y-4 md:space-y-0 md:grid md:grid-cols-[1fr_auto] md:gap-x-8 md:gap-y-6 lg:flex lg:flex-col lg:space-y-2 lg:gap-0">
                 {/* Phone - Order 1 on Tablet */}
                 <div className="flex items-center gap-3 md:col-start-1 md:order-1 lg:order-none lg:col-start-auto">
-                  <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
+                  <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                    <img
+                      src="/images/phone-icon.png"
+                      alt="Phone"
+                      className="w-8 h-8 object-contain brightness-0 invert"
+                    />
                   </div>
                   <div>
-                    <p className="font-semibold text-xl lg:text-base mb-1">
-                      Nomor
-                    </p>
-                    <p className="text-white/90 text-xl lg:text-base mb-1">
+                    <p className="font-semibold text-xl lg:text-lg">Nomor</p>
+                    <p className="text-white/90 text-xl lg:text-lg leading-tight">
                       088805599004
                     </p>
                   </div>
@@ -608,21 +797,16 @@ const App = () => {
 
                 {/* Email - Order 2 on Tablet (Below Phone) */}
                 <div className="flex items-center gap-3 md:col-start-1 md:order-2 lg:order-none lg:col-start-auto">
-                  <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                    </svg>
+                  <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                    <img
+                      src="/images/Email.png"
+                      alt="Email"
+                      className="w-8 h-8 object-contain brightness-0 invert"
+                    />
                   </div>
                   <div>
-                    <p className="font-semibold text-xl lg:text-base mb-1">
-                      Email:
-                    </p>
-                    <p className="text-white/90 text-xl lg:text-base mb-1">
+                    <p className="font-semibold text-xl lg:text-lg">Email:</p>
+                    <p className="text-white/90 text-xl lg:text-lg leading-tight">
                       info@fattah.co.id
                     </p>
                   </div>
@@ -630,25 +814,17 @@ const App = () => {
 
                 {/* Address - Order 3 on Tablet (Below Email) */}
                 <div className="flex items-center gap-3 md:col-start-1 md:order-3 lg:order-none lg:col-start-auto">
-                  <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                  <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                    <img
+                      src="/images/Address.png"
+                      alt="Address"
+                      className="w-8 h-8 object-contain brightness-0 invert"
+                    />
                   </div>
                   <div>
-                    <p className="font-semibold text-xl lg:text-base mb-1">
-                      Address:
-                    </p>
-                    <p className="text-white/90 text-xl lg:text-base leading-relaxed">
-                      Jawa Timur,
+                    <p className="font-semibold text-xl lg:text-lg">Address:</p>
+                    <p className="text-white/90 text-xl lg:text-lg leading-tight">
+                      Jawa Timur -
                       <br />
                       Surabaya, Indonesia
                     </p>
@@ -656,32 +832,28 @@ const App = () => {
                 </div>
 
                 {/* Social Media - Order 4 on Tablet (Right Column, Spanning Top 2 Rows) */}
-                <div className="flex gap-2.5 mt-8 pt-2 justify-center md:flex-col  md:mt-0 md:pt-0 md:gap-2 md:items-center md:col-start-2 md:row-start-1 md:row-span-2 md:order-4 lg:flex-row lg:gap-2.5 lg:mt-8 lg:pt-2 lg:justify-center lg:order-none lg:row-span-1 lg:col-start-auto lg:row-start-auto">
+                <div className="flex gap-2.5 mt-8 pt-2 justify-center md:flex-col  md:mt-0 md:pt-0 md:gap-2 md:items-center md:col-start-2 md:row-start-1 md:row-span-2 md:order-4 lg:flex-row lg:gap-1 lg:mt-4 lg:pt-2 lg:justify-center lg:order-none lg:row-span-1 lg:col-start-auto lg:row-start-auto">
                   <a
                     href="#"
-                    className="w-9 h-9 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition"
+                    className="w-9 h-9  hover:bg-white/30 rounded-lg flex items-center justify-center transition"
                     aria-label="LinkedIn"
                   >
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                    </svg>
+                    <img
+                      src="/images/LinkedIn.png"
+                      alt="Instagram"
+                      className="w-12 h-12 object-contain brightness-0 invert"
+                    />
                   </a>
                   <a
                     href="#"
-                    className="w-9 h-9 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition"
+                    className="w-9 h-9 hover:bg-white/30 rounded-lg flex items-center justify-center transition"
                     aria-label="Instagram"
                   >
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.949 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                    </svg>
+                    <img
+                      src="/images/instagram-icon.png"
+                      alt="Instagram"
+                      className="w-12 h-12 object-contain brightness-0 invert"
+                    />
                   </a>
                 </div>
               </div>
@@ -693,25 +865,31 @@ const App = () => {
       {/* Footer */}
       <footer className="bg-[#15723D] text-white py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-16 lg:gap-32">
             {/* Company Info - paling bawah di mobile & tablet, tetap center */}
-            <div className="order-last md:col-span-3 text-center md:flex md:flex-col md:items-center lg:order-first lg:col-span-1 lg:text-left lg:block">
+            <div
+              className="order-last md:col-span-1 text-center md:flex md:flex-col md:items-center lg:order-first lg:col-span-1 lg:text-left lg:block"
+              data-aos="fade-up"
+            >
               <a href="#home" onClick={handleLogoClick}>
                 <img
                   src="/images/logo.png"
                   alt="Fattah Logo"
-                  className="h-10 w-auto object-contain mb-4 brightness-0 invert mx-auto lg:mx-0"
+                  className="h-16 w-auto object-contain mb-4 brightness-0 invert mx-auto lg:mx-0"
                 />
-                <p className="text-white/80 text-lg leading-relaxed">
+                <p className="text-white/80 text-xl leading-relaxed">
                   PT. Pattah Niaga Mandiri
                 </p>
               </a>
             </div>
 
             {/* Quick Links */}
-            <div className="order-1 lg:order-none text-left lg:text-left">
-              <h3 className="font-bold text-lg mb-4">Perusahaan</h3>
-              <ul className="space-y-2 text-sm">
+            <div
+              className="order-1 lg:order-none text-left lg:text-left lg:pl-8"
+              data-aos="fade-up"
+            >
+              <h3 className="font-bold text-xl mb-4">Perusahaan</h3>
+              <ul className="space-y-2 text-base">
                 <li>
                   <a
                     href="#why-us"
@@ -747,9 +925,12 @@ const App = () => {
               </ul>
             </div>
 
-            <div className="order-2 lg:order-none text-left lg:text-left">
-              <h3 className="font-bold text-lg mb-4">Media Sosial</h3>
-              <ul className="space-y-2 text-sm">
+            <div
+              className="order-2 lg:order-none text-left lg:text-left lg:pl-8"
+              data-aos="fade-up"
+            >
+              <h3 className="font-bold text-xl mb-4">Media Sosial</h3>
+              <ul className="space-y-2 text-base">
                 <li>
                   <a
                     href="#why-us"
@@ -770,9 +951,12 @@ const App = () => {
             </div>
 
             {/* Contact Info */}
-            <div className="order-3 lg:order-none text-left lg:text-left">
-              <h3 className="font-bold text-lg mb-4">Contact</h3>
-              <ul className="space-y-3 text-sm">
+            <div
+              className="order-3 lg:order-none text-left lg:text-left lg:pl-8"
+              data-aos="fade-up"
+            >
+              <h3 className="font-bold text-xl mb-4">Contact</h3>
+              <ul className="space-y-3 text-base">
                 <li>
                   <a
                     href="#contact"
