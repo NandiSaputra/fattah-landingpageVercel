@@ -573,10 +573,10 @@ const App = () => {
         >
           {/* Section Title */}
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#226A38] mb-3">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl  font-bold text-[#226A38] mb-3">
               Brands Tersedia
             </h2>
-            <p className="text-base sm:text-3xl text-[#226A38]/80">
+            <p className="text-xl sm:text-3xl text-[#226A38]/80">
               Brands terbaik untuk bisnis anda
             </p>
           </div>
