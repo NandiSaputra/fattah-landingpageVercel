@@ -408,7 +408,7 @@ const App = () => {
             <a href="#" onClick={handleLogoClick} className="flex items-center">
               <img
                 src="/images/logo.png"
-                alt="Fattah Logo"
+                alt="Logo Fattah - Distributor Kurma Premium"
                 className="h-7 md:h-10 lg:h-12 w-auto object-contain"
               />
             </a>
@@ -516,7 +516,7 @@ const App = () => {
         {/* Background Image dengan custom position untuk hp, tablet, dan desktop */}
         <img
           src="/images/hero.jpg"
-          alt="Hero"
+          alt="Distributor kurma premium Fattah - Kurma Sukkari terbaik dari Timur Tengah"
           className="absolute inset-0 w-full h-full object-cover object-[15%_bottom] md:object-[20%_bottom] lg:object-center"
         />
 
@@ -878,7 +878,7 @@ const App = () => {
               >
                 <img
                   src="/images/logo.png"
-                  alt="Fattah Logo"
+                  alt="Logo Fattah - Distributor Kurma Premium Indonesia"
                   className="h-16 w-auto object-contain mb-4 brightness-0 invert"
                 />
                 <p className="text-white/80 text-xl leading-relaxed whitespace-nowrap">
