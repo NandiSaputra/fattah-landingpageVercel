@@ -588,7 +588,7 @@ const App = () => {
               <img
                 src="/images/product1.png"
                 alt="ALDAYFE Brand"
-                className="w-full h-full object-cover transition duration-500 group-hover:blur-sm"
+                className="w-full h-full object-cover transition duration-500"
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
                 <img
@@ -605,7 +605,7 @@ const App = () => {
                 <img
                   src="/images/product2.png"
                   alt="Golden Valley Brand"
-                  className="w-full h-full object-cover transition duration-500  group-hover:blur-sm"
+                  className="w-full h-full object-cover transition duration-500 "
                 />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
                   <img
@@ -619,7 +619,7 @@ const App = () => {
                 <img
                   src="/images/product3.jpg"
                   alt="Nuran Brand"
-                  className="w-full h-full object-cover transition duration-500 group-hover:blur-sm"
+                  className="w-full h-full object-cover transition duration-500 "
                 />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
                   <img
