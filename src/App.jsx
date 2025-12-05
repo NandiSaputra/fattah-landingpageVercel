@@ -584,29 +584,50 @@ const App = () => {
           {/* Brands Grid - 1 gambar full width di atas, 2 gambar di bawah */}
           <div className="flex flex-col gap-6 lg:gap-6 min-h-[600px] lg:min-h-[700px]">
             {/* Gambar pertama full width */}
-            <div className="w-full h-[350px] lg:h-[450px] overflow-hidden ">
+            <div className="w-full h-[350px] lg:h-[450px] overflow-hidden relative group">
               <img
                 src="/images/product1.png"
                 alt="ALDAYFE Brand"
-                className="w-full h-full object-cover hover:scale-110 transition duration-500"
+                className="w-full h-full object-cover transition duration-500 group-hover:blur-sm"
               />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
+                <img
+                  src="/images/logo.png"
+                  alt="Fattah Logo"
+                  className="w-32 md:w-48 object-contain drop-shadow-lg"
+                />
+              </div>
             </div>
 
             {/* Grid untuk 2 gambar di bawah - sebelah kiri lebih kecil */}
             <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-5">
-              <div className="lg:col-span-1 h-[300px] lg:h-[350px] overflow-hidden  bg-white">
+              <div className="lg:col-span-1 h-[300px] lg:h-[350px] overflow-hidden bg-white relative group">
                 <img
                   src="/images/product2.png"
                   alt="Golden Valley Brand"
-                  className="w-full h-full object-cover hover:scale-110 transition duration-500"
+                  className="w-full h-full object-cover transition duration-500  group-hover:blur-sm"
                 />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
+                  <img
+                    src="/images/logo.png"
+                    alt="Fattah Logo"
+                    className="w-24 md:w-32 object-contain drop-shadow-lg"
+                  />
+                </div>
               </div>
-              <div className="lg:col-span-2 h-[300px] lg:h-[350px] overflow-hidden  bg-white">
+              <div className="lg:col-span-2 h-[300px] lg:h-[350px] overflow-hidden bg-white relative group">
                 <img
                   src="/images/product3.jpg"
                   alt="Nuran Brand"
-                  className="w-full h-full object-cover hover:scale-110 transition duration-500"
+                  className="w-full h-full object-cover transition duration-500 group-hover:blur-sm"
                 />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
+                  <img
+                    src="/images/logo.png"
+                    alt="Fattah Logo"
+                    className="w-32 md:w-48 object-contain drop-shadow-lg"
+                  />
+                </div>
               </div>
             </div>
           </div>
