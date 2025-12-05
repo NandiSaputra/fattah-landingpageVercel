@@ -256,6 +256,16 @@ const App = () => {
     AOS.refresh();
   }, []);
 
+  // Auto-reset active brand image after click (mobile/tablet only)
+  React.useEffect(() => {
+    if (activeBrandImage !== null) {
+      const timer = setTimeout(() => {
+        setActiveBrandImage(null);
+      }, 1500); // Reset after 1.5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [activeBrandImage]);
+
   const handleLogoClick = (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -603,9 +613,7 @@ const App = () => {
             {/* Gambar pertama full width */}
             <div
               className="w-full h-[350px] lg:h-[450px] overflow-hidden relative group cursor-pointer"
-              onClick={() =>
-                setActiveBrandImage(activeBrandImage === 1 ? null : 1)
-              }
+              onClick={() => setActiveBrandImage(1)}
             >
               <img
                 src="/images/product1.png"
@@ -618,9 +626,9 @@ const App = () => {
                 }`}
               >
                 <img
-                  src="/images/logo.png"
+                  src="/images/logo2.png"
                   alt="Fattah Logo"
-                  className="w-32 md:w-48 object-contain drop-shadow-lg"
+                  className="w-72 md:w-80 lg:w-96 object-contain drop-shadow-lg"
                 />
               </div>
             </div>
@@ -629,9 +637,7 @@ const App = () => {
             <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-5">
               <div
                 className="lg:col-span-1 h-[300px] lg:h-[350px] overflow-hidden bg-white relative group cursor-pointer"
-                onClick={() =>
-                  setActiveBrandImage(activeBrandImage === 2 ? null : 2)
-                }
+                onClick={() => setActiveBrandImage(2)}
               >
                 <img
                   src="/images/product2.png"
@@ -644,17 +650,15 @@ const App = () => {
                   }`}
                 >
                   <img
-                    src="/images/logo.png"
+                    src="/images/logo4.png"
                     alt="Fattah Logo"
-                    className="w-24 md:w-32 object-contain drop-shadow-lg"
+                    className="w-72 md:w-80 lg:w-96 object-contain drop-shadow-lg"
                   />
                 </div>
               </div>
               <div
                 className="lg:col-span-2 h-[300px] lg:h-[350px] overflow-hidden bg-white relative group cursor-pointer"
-                onClick={() =>
-                  setActiveBrandImage(activeBrandImage === 3 ? null : 3)
-                }
+                onClick={() => setActiveBrandImage(3)}
               >
                 <img
                   src="/images/product3.jpg"
@@ -667,9 +671,9 @@ const App = () => {
                   }`}
                 >
                   <img
-                    src="/images/logo.png"
+                    src="/images/logo3.png"
                     alt="Fattah Logo"
-                    className="w-32 md:w-48 object-contain drop-shadow-lg"
+                    className="w-32 md:w-36 lg:w-48 object-contain drop-shadow-lg"
                   />
                 </div>
               </div>
@@ -920,6 +924,19 @@ const App = () => {
                       className="w-12 h-12 object-contain brightness-0 invert"
                     />
                   </a>
+                  <a
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 hover:bg-white/30 rounded-lg flex items-center justify-center transition"
+                    aria-label="Facebook"
+                  >
+                    <img
+                      src="/images/fb.png"
+                      alt="Facebook"
+                      className="w-12 h-12 object-contain brightness-0 invert"
+                    />
+                  </a>
                 </div>
               </div>
             </div>
@@ -1014,6 +1031,16 @@ const App = () => {
                     className="text-white/80 hover:text-white transition"
                   >
                     Instagram
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href=""
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/80 hover:text-white transition"
+                  >
+                    Facebook
                   </a>
                 </li>
               </ul>
