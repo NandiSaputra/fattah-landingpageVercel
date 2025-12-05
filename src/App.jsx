@@ -903,7 +903,9 @@ const App = () => {
                 {/* Social Media - Order 4 on Tablet (Right Column, Spanning Top 2 Rows) */}
                 <div className="flex gap-2.5 mt-8 pt-2 justify-center md:flex-col  md:mt-0 md:pt-0 md:gap-2 md:items-center md:col-start-2 md:row-start-1 md:row-span-2 md:order-4 lg:flex-row lg:gap-1 lg:mt-4 lg:pt-2 lg:justify-center lg:order-none lg:row-span-1 lg:col-start-auto lg:row-start-auto">
                   <a
-                    href="#"
+                    href="https://www.linkedin.com/company/fattahco/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-9 h-9  hover:bg-white/30 rounded-lg flex items-center justify-center transition"
                     aria-label="LinkedIn"
                   >
@@ -914,7 +916,9 @@ const App = () => {
                     />
                   </a>
                   <a
-                    href="#"
+                    href="https://www.instagram.com/fattahniaga?igsh=d3NhYTE4emRsdHIx"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-9 h-9 hover:bg-white/30 rounded-lg flex items-center justify-center transition"
                     aria-label="Instagram"
                   >
@@ -925,7 +929,7 @@ const App = () => {
                     />
                   </a>
                   <a
-                    href="#"
+                    href="https://www.facebook.com/fattahniaga/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-9 h-9 hover:bg-white/30 rounded-lg flex items-center justify-center transition"
@@ -1019,7 +1023,9 @@ const App = () => {
               <ul className="space-y-2 text-base">
                 <li>
                   <a
-                    href="#why-us"
+                    href="https://www.linkedin.com/company/fattahco/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-white/80 hover:text-white transition cursor-pointer"
                   >
                     LinkedIn
@@ -1027,7 +1033,9 @@ const App = () => {
                 </li>
                 <li>
                   <a
-                    href="#brands"
+                    href="https://www.instagram.com/fattahniaga?igsh=d3NhYTE4emRsdHIx"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-white/80 hover:text-white transition"
                   >
                     Instagram
@@ -1035,7 +1043,7 @@ const App = () => {
                 </li>
                 <li>
                   <a
-                    href=""
+                    href="https://www.facebook.com/fattahniaga/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white/80 hover:text-white transition"
