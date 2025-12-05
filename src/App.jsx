@@ -42,6 +42,7 @@ const reasons = [
 
 const ReasonSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeReasonImage, setActiveReasonImage] = useState(null); // null | 1 | 2 | 3
   const sliderRef = React.useRef(null);
 
   // Auto slide for tablet only
@@ -53,6 +54,16 @@ const ReasonSection = () => {
     }, 3000);
     return () => clearInterval(interval);
   }, [activeIndex]);
+
+  // Auto-reset active reason image after click (mobile/tablet only)
+  React.useEffect(() => {
+    if (activeReasonImage !== null) {
+      const timer = setTimeout(() => {
+        setActiveReasonImage(null);
+      }, 1500); // Reset after 1.5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [activeReasonImage]);
 
   const scrollToSlide = (index) => {
     if (sliderRef.current) {
@@ -191,11 +202,16 @@ const ReasonSection = () => {
                 key={item.id}
                 className="w-full md:min-w-full lg:min-w-0 md:snap-center bg-[#FFF6F2] rounded-br-[3rem] overflow-hidden shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 duration-300 flex flex-col min-h-[542px]"
               >
-                <div className="h-[300px] overflow-hidden">
+                <div
+                  className="h-[300px] overflow-hidden cursor-pointer lg:cursor-default"
+                  onClick={() => setActiveReasonImage(item.id)}
+                >
                   <img
                     src={item.img}
                     alt={item.title}
-                    className="w-full h-full object-cover hover:scale-110 transition duration-500"
+                    className={`w-full h-full object-cover transition duration-500 lg:hover:scale-110 ${
+                      activeReasonImage === item.id ? "scale-110" : ""
+                    }`}
                   />
                 </div>
                 <div className="py-8 px-6 flex-1 flex flex-col items-center text-center">
@@ -219,6 +235,7 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [formStatus, setFormStatus] = useState(null); // null | 'submitting' | 'success' | 'error'
+  const [activeBrandImage, setActiveBrandImage] = useState(null); // null | 1 | 2 | 3
 
   // Scroll listener for navbar background
   React.useEffect(() => {
@@ -442,7 +459,7 @@ const App = () => {
             <div className="hidden lg:block">
               <button
                 onClick={handleContactClick}
-                className="text-[#15723D] text-xl xl:text-2xl font-medium px-5 xl:px-6 py-2 border border-[#15723D] rounded transition transform hover:scale-105"
+                className="text-[#15723D] text-xl xl:text-2xl font-medium px-5 xl:px-6 py-2 border border-[#15723D] rounded transition transform hover:scale-105 active:scale-95"
               >
                 Kontak Kami
               </button>
@@ -498,7 +515,7 @@ const App = () => {
                 Kualitas Storage
               </a>
               <button
-                className="w-full bg-[#15723D] hover:bg-[#115A30] text-white px-6 py-3 md:py-4 rounded-lg font-semibold transition mt-4 text-xl md:text-2xl"
+                className="w-full bg-[#15723D] hover:bg-[#115A30] active:bg-[#0D4422] text-white px-6 py-3 md:py-4 rounded-lg font-semibold transition mt-4 text-xl md:text-2xl active:scale-95"
                 onClick={handleContactClick}
               >
                 Kontak Kami
@@ -545,7 +562,7 @@ const App = () => {
               href="https://wa.me/6288805599004"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#226A38] hover:bg-[#1B552E] text-white px-8 md:px-14 py-2 md:py-4 rounded-md font-semibold text-lg md:text-3xl lg:text-lg xl:text-xl transition transform hover:scale-105 shadow-lg mb-10 md:mb-8 inline-block"
+              className="bg-[#226A38] hover:bg-[#1B552E] active:bg-[#154523] text-white px-8 md:px-14 py-2 md:py-4 rounded-md font-semibold text-lg md:text-3xl lg:text-lg xl:text-xl transition transform hover:scale-105 active:scale-95 shadow-lg mb-10 md:mb-8 inline-block"
             >
               WA kami
             </a>
@@ -584,13 +601,22 @@ const App = () => {
           {/* Brands Grid - 1 gambar full width di atas, 2 gambar di bawah */}
           <div className="flex flex-col gap-6 lg:gap-6 min-h-[600px] lg:min-h-[700px]">
             {/* Gambar pertama full width */}
-            <div className="w-full h-[350px] lg:h-[450px] overflow-hidden relative group">
+            <div
+              className="w-full h-[350px] lg:h-[450px] overflow-hidden relative group cursor-pointer"
+              onClick={() =>
+                setActiveBrandImage(activeBrandImage === 1 ? null : 1)
+              }
+            >
               <img
                 src="/images/product1.png"
                 alt="ALDAYFE Brand"
                 className="w-full h-full object-cover transition duration-500"
               />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
+              <div
+                className={`absolute inset-0 flex items-center justify-center transition duration-500 z-10 bg-black/60 lg:opacity-0 lg:group-hover:opacity-100 ${
+                  activeBrandImage === 1 ? "opacity-100" : "opacity-0"
+                }`}
+              >
                 <img
                   src="/images/logo.png"
                   alt="Fattah Logo"
@@ -601,13 +627,22 @@ const App = () => {
 
             {/* Grid untuk 2 gambar di bawah - sebelah kiri lebih kecil */}
             <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-5">
-              <div className="lg:col-span-1 h-[300px] lg:h-[350px] overflow-hidden bg-white relative group">
+              <div
+                className="lg:col-span-1 h-[300px] lg:h-[350px] overflow-hidden bg-white relative group cursor-pointer"
+                onClick={() =>
+                  setActiveBrandImage(activeBrandImage === 2 ? null : 2)
+                }
+              >
                 <img
                   src="/images/product2.png"
                   alt="Golden Valley Brand"
                   className="w-full h-full object-cover transition duration-500 "
                 />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
+                <div
+                  className={`absolute inset-0 flex items-center justify-center transition duration-500 z-10 bg-black/60 lg:opacity-0 lg:group-hover:opacity-100 ${
+                    activeBrandImage === 2 ? "opacity-100" : "opacity-0"
+                  }`}
+                >
                   <img
                     src="/images/logo.png"
                     alt="Fattah Logo"
@@ -615,13 +650,22 @@ const App = () => {
                   />
                 </div>
               </div>
-              <div className="lg:col-span-2 h-[300px] lg:h-[350px] overflow-hidden bg-white relative group">
+              <div
+                className="lg:col-span-2 h-[300px] lg:h-[350px] overflow-hidden bg-white relative group cursor-pointer"
+                onClick={() =>
+                  setActiveBrandImage(activeBrandImage === 3 ? null : 3)
+                }
+              >
                 <img
                   src="/images/product3.jpg"
                   alt="Nuran Brand"
                   className="w-full h-full object-cover transition duration-500 "
                 />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 z-10 bg-black/60">
+                <div
+                  className={`absolute inset-0 flex items-center justify-center transition duration-500 z-10 bg-black/60 lg:opacity-0 lg:group-hover:opacity-100 ${
+                    activeBrandImage === 3 ? "opacity-100" : "opacity-0"
+                  }`}
+                >
                   <img
                     src="/images/logo.png"
                     alt="Fattah Logo"
@@ -666,7 +710,7 @@ const App = () => {
               </p>
 
               <div className="flex justify-center lg:justify-start">
-                <button className="bg-[#15723D] hover:bg-[#0F5329] text-white px-8 py-3 rounded-md font-semibold transition transform hover:scale-105 shadow-md mt-4">
+                <button className="bg-[#15723D] hover:bg-[#0F5329] active:bg-[#0A3B1D] text-white px-8 py-3 rounded-md font-semibold transition transform hover:scale-105 active:scale-95 shadow-md mt-4">
                   Hubungi kami
                 </button>
               </div>
@@ -784,7 +828,7 @@ const App = () => {
                   <button
                     type="submit"
                     disabled={formStatus === "submitting"}
-                    className="bg-white text-[#15723D] px-10 py-3 rounded-xl font-semibold hover:bg-gray-50 transition transform hover:scale-105 shadow-md text-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="bg-white text-[#15723D] px-10 py-3 rounded-xl font-semibold hover:bg-gray-50 active:bg-gray-100 transition transform hover:scale-105 active:scale-95 shadow-md text-sm disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {formStatus === "submitting" ? "Mengirim..." : "Kirim"}
                   </button>
