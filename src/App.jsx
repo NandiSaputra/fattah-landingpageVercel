@@ -436,7 +436,7 @@ const App = () => {
               <img
                 src="/images/logo.png"
                 alt="Logo Fattah - Distributor Kurma Premium"
-                className="h-7 md:h-10 lg:h-12 w-auto object-contain"
+                className="h-10 md:h-14 lg:h-12 w-auto object-contain"
               />
             </a>
 
@@ -544,7 +544,7 @@ const App = () => {
         <img
           src="/images/hero.jpg"
           alt="Distributor kurma premium Fattah - Kurma Sukkari terbaik dari Timur Tengah"
-          className="absolute inset-0 w-full h-full object-cover object-[15%_bottom] md:object-[20%_bottom] lg:object-center"
+          className="absolute inset-0 w-full h-full object-cover object-[35%_bottom] md:object-[20%_bottom] lg:object-center"
         />
 
         {/* Overlay for better text readability */}
